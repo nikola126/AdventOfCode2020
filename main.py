@@ -2,6 +2,8 @@
 
 bags_checked = set()
 bags_sum = 0
+global operation_list
+operation_list = []
 
 
 def bag_check(bags_list, target, current_bag):
@@ -30,28 +32,29 @@ def bag_check(bags_list, target, current_bag):
                     return True
 
 
-def bag_count(bags_list, bags_sum, current_bag):
-    print(f"Current Bag: {current_bag['name']}", end=' ')
+def bag_count(bags_list, bags_sum, current_bag, previous_number_of_bags):
+    global operation_list
+
+    print(f"Previous number of bags:", previous_number_of_bags)
+    print(f"Current Bag: {current_bag['amounts']}")
+    operation_list.append(current_bag['amounts'])
+    operation_list.append(previous_number_of_bags)
     for bag in bags_list:
+        index = 0
         if current_bag['name'] == bag['name']:
-            print(bag['contains'], bag['amounts'])
-            index = 0
-            if bag['contains'] == 0:
-                print("Going Up")
-                return
+            # print(bag['contains'], bag['amounts'])
             for sub_bag in bag['contains']:
-                # print(f"Checking {sub_bag}, multiply by {bag['amounts'][index]} later")
-                # bags_sum += bag['amounts'][index]
                 # find the dictionary entry
                 for entry in bags_list:
                     if entry['name'] == sub_bag:
                         check_here = entry
                     # recursive call
-                # print("Check here:", check_here['name'])
-                # print("Sum of amounts:", sum(check_here['amounts'][:]))
-                bag_count(bags_list, target, check_here)
+                # print("Recursive call:", bag['amounts'][index])
+                previous_number_of_bags = bag['amounts'][index]
+                bag_count(bags_list, bags_sum, check_here, previous_number_of_bags)
                 index += 1
-            print("All checked, going up")
+            # print("Going up")
+            # operation_list.append('*')
             return
 
 
@@ -97,7 +100,34 @@ if __name__ == '__main__':
     # print("LENGTH:", len(set(bags_checked)))
 
     # PART TWO
-
+    multiplier = 0
     for bag in bags_list:
         if target == bag['name']:
-            bag_count(bags_list, bags_sum, bag)
+            bag_count(bags_list, bags_sum, bag, 1)
+
+    print(operation_list)
+    correct_operation_list = []
+    for step in operation_list:
+        if type(step) is list:
+            if sum(step) == 0:
+                pass
+            else:
+                correct_operation_list.append(sum(step))
+        else:
+            correct_operation_list.append(step)
+    correct_operation_list.reverse()
+    print(correct_operation_list)
+
+    result = 0
+    action = '+'
+    #
+    # for item in correct_operation_list:
+    #     print(item, end='')
+    #     print(action, end='')
+    #     if action == '*':
+    #         action = '+'
+    #     else:
+    #         action = '*'
+
+    print('(((((2*2+2)*2+2)*2+2)*2+2)*2+2)*1')
+    print(result)
