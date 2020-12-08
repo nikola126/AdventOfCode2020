@@ -109,10 +109,7 @@ if __name__ == '__main__':
     correct_operation_list = []
     for step in operation_list:
         if type(step) is list:
-            if sum(step) == 0:
-                pass
-            else:
-                correct_operation_list.append(sum(step))
+            correct_operation_list.append(sum(step))
         else:
             correct_operation_list.append(step)
     correct_operation_list.reverse()
@@ -121,13 +118,9 @@ if __name__ == '__main__':
     result = 0
     action = '+'
     #
-    # for item in correct_operation_list:
-    #     print(item, end='')
-    #     print(action, end='')
-    #     if action == '*':
-    #         action = '+'
-    #     else:
-    #         action = '*'
+    for i in range(0, len(correct_operation_list) - 1, 2):
+        print(correct_operation_list[i], correct_operation_list[i + 1], 'sum:',
+              correct_operation_list[i] + correct_operation_list[i + 1])
 
-    print('(((((2*2+2)*2+2)*2+2)*2+2)*2+2)*1')
-    print(result)
+    # print('(((((2*2+2)*2+2)*2+2)*2+2)*2+2)*1')
+    # print(result)
