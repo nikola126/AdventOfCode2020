@@ -1,62 +1,63 @@
-# Day 2
+# Day 3
+import numpy as np
+from trees_loop import trees_loop
 
 # Get Input
 if __name__ == '__main__':
 
-    pwd_list = []
+    # Get Dimensions
+    rows = 0
+    cols = 0
     for line in open("puzzle_input.txt", "r"):
         line = line.strip('\n')
-        pwd_list.append(line)
+        cols = len(line)
+        rows = rows + 1
 
-    # PART ONE
+    # Reshape map in array and populate with int values
+    # Tree = # = 1
+    # Open = . = 0
+    # print(f"Map Dimensions: {x}x{y}")
 
-    entries = len(pwd_list)
-    print(f"Report with {entries} entries")
+    map = np.zeros((rows, cols))
+    row = 0
+    for line in open("puzzle_input.txt", "r"):
+        line = line.strip('\n')
+        for col in range(0, len(line)):
+            if line[col] == '.':
+                char = 0
+            else:
+                char = 1
+            map[row][col] = int(char)
+        row = row + 1
+    print(map.shape)
 
-    valid_passwords = 0
-    # Loop through values
-    for entry in pwd_list:
-        # Get Password Policy
-        entry = entry.split(' ')
-        # Lower/Upper Count Limits
-        indices = entry[0].split('-')
-        lower = int(indices[0])
-        upper = int(indices[1])
-        # Character to look for
-        char = entry[1].strip(':')
-        # Password
-        password = entry[2]
-
-        # Info
-        # print(f"{char} must be in {password} between {lower} and {upper} times ({password.count(char)}).")
-        if lower <= password.count(char) <= upper:
-            valid_passwords = valid_passwords + 1
-
-    print(valid_passwords)
+    # Loop through the end ( THE MAP LOOPS TO THE RIGHT
+    next_row = 0
+    next_col = 0
+    step_right = 3
+    step_down = 1
+    trees = 0
+    # print(f"Rows:{rows}, Columns:{cols}")
+    while (next_row < rows):
+        # print(f"Go to Map[{next_row}][{next_col}] --> ", end=" ")
+        # print(map[next_row][next_col])
+        if (map[next_row][next_col] == 1):
+            trees = trees + 1
+        next_row = next_row + step_down
+        next_col = next_col + step_right
+        if (next_col >= cols):
+            # print(f"Next col is {next_col} but max is {cols}. The new col should be {next_col - cols}")
+            next_col = next_col - cols
+    print(trees)
 
     # PART TWO
-    valid_passwords = 0
-    # Loop through values
-    for entry in pwd_list:
-        # Get Password Policy
-        entry = entry.split(' ')
-        # Get Position Indices
-        indices = entry[0].split('-')
-        index_one = int(indices[0])
-        index_two = int(indices[1])
-        # Character to look for
-        char = entry[1].strip(':')
-        # Password
-        password = entry[2]
-        # Get Letters at those Indices
-        letter_one = password[index_one-1]
-        letter_two = password[index_two-1]
+    print("PART TWO")
 
-        if (letter_one == char) ^ (letter_two == char):
-            valid_passwords = valid_passwords + 1
+    trees_product = 1
 
-    print(valid_passwords)
-
-
-
-
+    trees_product = trees_product * trees_loop(map, rows, cols, 1, 1)
+    trees_product = trees_product * trees_loop(map, rows, cols, 3, 1)
+    trees_product = trees_product * trees_loop(map, rows, cols, 5, 1)
+    trees_product = trees_product * trees_loop(map, rows, cols, 7, 1)
+    trees_product = trees_product * trees_loop(map, rows, cols, 1, 2)
+    print(trees_product)
