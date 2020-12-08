@@ -30,22 +30,19 @@ if __name__ == '__main__':
     offset_one = 1
     offset_two = 2
     for entry_one in report:
-        #print(f"Offsets: {offset_one}, {offset_two}")
-        #print(f"Looking at {entry_one}")
+        # print(f"Offsets: {offset_one}, {offset_two}")
+        # print(f"Looking at {entry_one}")
         for entry_two in report[offset_one:]:
-            #print(f"\tLooking at {entry_two}")
+            # print(f"\tLooking at {entry_two}")
             for entry_three in report[offset_two:]:
-                #print(f"\t\tLooking at {entry_three}")
-                #print(f"\t\tLooking at {entry_one}, {entry_two} and {entry_three}")
-                if (entry_one+entry_two+entry_three) == 2020:
+                # print(f"\t\tLooking at {entry_three}")
+                # print(f"\t\tLooking at {entry_one}, {entry_two} and {entry_three}")
+                if (entry_one + entry_two + entry_three) == 2020:
                     result = (entry_one * entry_two * entry_three)
-                    print (result)
+                    print(result)
             offset_two = offset_two + 1
         # Reset Offsets
         offset_one_initial = offset_one_initial + 1
         offset_two_initial = offset_two_initial + 1
         offset_one = offset_one_initial
         offset_two = offset_two_initial
-
-
-
