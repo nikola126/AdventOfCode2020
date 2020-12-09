@@ -1,98 +1,95 @@
-# Day 7
+# Day 8
 
-bags_checked = set()
-bags_sum = 0
-
-
-def bag_check(bags_list, target, current_bag):
-    if target in current_bag['contains']:
-        bags_checked.add(current_bag['name'])
-        print(current_bag['name'], sum(current_bag['amounts'][:]))
-        return True
-    else:
-        # RECURSIVE CALL
-        for bag in current_bag['contains']:
-            if bag in bags_checked:
-                bags_checked.add(current_bag['name'])
-                print(current_bag['name'], sum(current_bag['amounts'][:]))
-                return True
-        if len(current_bag['contains']) == 0:
-            return False
-        else:
-            for item in current_bag['contains']:
-                # find the dictionary entry
-                for entry in bags_list:
-                    if entry['name'] == item:
-                        check_here = entry
-                if bag_check(bags_list, target, check_here):
-                    bags_checked.add(current_bag['name'])
-                    print(current_bag['name'], sum(current_bag['amounts'][:]))
-                    return True
-
-
-def bag_count(bags_list, bags_sum, current_bag, bags_inside, rec_level):
-    print(f"Current Bag: {current_bag}")
-    # get the data for the current bag
-    for bag in bags_list:
-        index = 0
-        if current_bag['name'] == bag['name']:
-            # if no sub_bags:
-            if sum(current_bag['amounts']) == 0:
-                print(f"No sub bag in {current_bag['name']}.")
-                rec_level -= 1
-                return 1
+def booter(cmd_list_func, inc_list_func, visited_func):
+    acc_func = 0
+    idx = 0
+    success_func = True
+    # print(f"Max i = {len(cmd_list)-1}")
+    while True:
+        # print(f"i = {idx}, command: {cmd_list_func[idx]} {inc_list_func[idx]} visited: {visited_func[idx]}")
+        if visited_func[idx]:
+            success_func = False
+            break
+        if cmd_list_func[idx] == 'nop':
+            visited_func[idx] = True
+            idx += 1
+        elif cmd_list_func[idx] == 'acc':
+            # print(f"Increment acc by {inc_list[i]}")
+            visited_func[idx] = True
+            acc_func += inc_list_func[idx]
+            idx += 1
+        elif cmd_list_func[idx] == 'jmp':
+            # print(f"Jump to index: {i + inc_list[i]}")
+            # no jump? move next by 1
+            if inc_list_func[idx] == 0:
+                idx += 1
             else:
-                # look in every sub_bag
-                for sub_bag in bag['contains']:
-                    for entry in bags_list:
-                        if entry['name'] == sub_bag:
-                            check_here = entry
-                    # recursive call
-                    bags_inside = bag['amounts'][index]
-                    bags_below = bag_count(bags_list, bags_sum, check_here, bags_inside, rec_level + 1)
-                    index += 1
-    rec_level -= 1
-    return 1
+                idx += inc_list_func[idx]
+        else:
+            print("Unrecognized Command:", cmd_list_func[idx])
+            break
+        if idx == len(cmd_list_func):
+            break
+    return acc_func, success_func
 
 
 if __name__ == '__main__':
 
-    # create list of dictionaries
-    bags_list = []
-    # light_red_bag = { inside: [bright_white, muted_yellow] max:[1 2] }
+    cmd_list = []  # holds commands
+    inc_list = []  # holds increments
+    visited = []  # holds status
     for line in open('puzzle_input.txt', 'r').readlines():
-        line = line.strip('\n')
-        line = line.split(" ")
-        name = line[0] + line[1]
-        bag = {'name': name}
-        # check for other bags inside
-        if line[4] == 'no':
-            bag['contains'] = []
-            bag['amounts'] = [0]
-        else:
-            # isolate rest of the description
-            description = line[4:]
-            # how many inside ?
-            bags_inside = len(description) / 4
-            bag['contains'] = []
-            bag['amounts'] = []
-            for i in range(0, int(bags_inside)):
-                bag_inside = description[1 + 4 * i] + description[2 + 4 * i]
-                amount_inside = description[0 + 4 * i]
-                bag['contains'].append(bag_inside)
-                bag['amounts'].append(int(amount_inside))
-        bags_list.append(bag)
+        line = line.split(' ')
+        cmd_list.append(line[0])
+        inc_list.append(int(line[1]))
+        visited.append(False)
 
-    # for entry in bags_list:
-    #     print(entry)
+    print(f"Part One\n")
+    # send copies
+    cmd_copy = cmd_list[:]
+    inc_copy = inc_list[:]
+    visited_copy = visited[:]
+    acc, success = booter(cmd_copy, inc_copy, visited_copy)
 
-    target = 'shinygold'
-    print(f"TARGET:", target)
+    print("Success:", success)
+    print(f"Accumulator: {acc}")
 
-    # PART TWO TODO
-    multiplier = 0
-    for bag in bags_list:
-        if target == bag['name']:
-            result = bag_count(bags_list, bags_sum, bag, 1, 1)
+    print(f"\nPart Two\n")
 
-    # print(result - 1)
+    success = False
+
+    while not success:
+        # CHANGE jmp -> nop
+        for i in range(0, len(cmd_list)):
+            if cmd_list[i] == 'jmp':
+                print(f"Attempt to change {cmd_list[i]} at index {i} to nop", '-----' * 5)
+                cmd_fix = cmd_list[:]
+                cmd_fix[i] = 'nop'
+                # print('ORIGINAL:\t', cmd_list)
+                # print('FIX:\t\t', cmd_fix)
+                inc_fix = inc_list[:]
+                vis_fix = visited[:]
+                acc, success = booter(cmd_fix, inc_fix, vis_fix)
+                # print(success)
+            if success:
+                print("Last run was successful")
+                print("Accumulator: ", acc)
+                break
+        # print("Can't fix with jmp -> nop")
+        # CHANGE nop -> jmp
+        for i in range(0, len(cmd_list)):
+            if cmd_list[i] == 'nop':
+                print(f"Attempt to change {cmd_list[i]} at index {i} to jmp", '-----' * 5)
+                cmd_fix = cmd_list[:]
+                cmd_fix[i] = 'jmp'
+                # print('ORIGINAL:\t', cmd_list)
+                # print('FIX:\t\t', cmd_fix)
+                inc_fix = inc_list[:]
+                vis_fix = visited[:]
+                acc, success = booter(cmd_fix, inc_fix, vis_fix)
+                # print(success)
+            if success:
+                print("Last run was successful")
+                print("Accumulator: ", acc)
+        # print("Can't fix with nop -> jmp")
+        break
