@@ -2,8 +2,6 @@
 
 bags_checked = set()
 bags_sum = 0
-global operation_list
-operation_list = []
 
 
 def bag_check(bags_list, target, current_bag):
@@ -32,30 +30,29 @@ def bag_check(bags_list, target, current_bag):
                     return True
 
 
-def bag_count(bags_list, bags_sum, current_bag, previous_number_of_bags):
-    global operation_list
-
-    print(f"Previous number of bags:", previous_number_of_bags)
-    print(f"Current Bag: {current_bag['amounts']}")
-    operation_list.append(current_bag['amounts'])
-    operation_list.append(previous_number_of_bags)
+def bag_count(bags_list, bags_sum, current_bag, bags_inside, rec_level):
+    print(f"Current Bag: {current_bag}")
+    # get the data for the current bag
     for bag in bags_list:
         index = 0
         if current_bag['name'] == bag['name']:
-            # print(bag['contains'], bag['amounts'])
-            for sub_bag in bag['contains']:
-                # find the dictionary entry
-                for entry in bags_list:
-                    if entry['name'] == sub_bag:
-                        check_here = entry
+            # if no sub_bags:
+            if sum(current_bag['amounts']) == 0:
+                print(f"No sub bag in {current_bag['name']}.")
+                rec_level -= 1
+                return 1
+            else:
+                # look in every sub_bag
+                for sub_bag in bag['contains']:
+                    for entry in bags_list:
+                        if entry['name'] == sub_bag:
+                            check_here = entry
                     # recursive call
-                # print("Recursive call:", bag['amounts'][index])
-                previous_number_of_bags = bag['amounts'][index]
-                bag_count(bags_list, bags_sum, check_here, previous_number_of_bags)
-                index += 1
-            # print("Going up")
-            # operation_list.append('*')
-            return
+                    bags_inside = bag['amounts'][index]
+                    bags_below = bag_count(bags_list, bags_sum, check_here, bags_inside, rec_level + 1)
+                    index += 1
+    rec_level -= 1
+    return 1
 
 
 if __name__ == '__main__':
@@ -92,35 +89,10 @@ if __name__ == '__main__':
     target = 'shinygold'
     print(f"TARGET:", target)
 
-    # check top level
-    # for bag in bags_list:
-    #     bag_check(bags_list, target, bag)
-    #
-    # print("SET:", set(bags_checked))
-    # print("LENGTH:", len(set(bags_checked)))
-
-    # PART TWO
+    # PART TWO TODO
     multiplier = 0
     for bag in bags_list:
         if target == bag['name']:
-            bag_count(bags_list, bags_sum, bag, 1)
+            result = bag_count(bags_list, bags_sum, bag, 1, 1)
 
-    print(operation_list)
-    correct_operation_list = []
-    for step in operation_list:
-        if type(step) is list:
-            correct_operation_list.append(sum(step))
-        else:
-            correct_operation_list.append(step)
-    correct_operation_list.reverse()
-    print(correct_operation_list)
-
-    result = 0
-    action = '+'
-    #
-    for i in range(0, len(correct_operation_list) - 1, 2):
-        print(correct_operation_list[i], correct_operation_list[i + 1], 'sum:',
-              correct_operation_list[i] + correct_operation_list[i + 1])
-
-    # print('(((((2*2+2)*2+2)*2+2)*2+2)*2+2)*1')
-    # print(result)
+    # print(result - 1)
