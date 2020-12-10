@@ -4,6 +4,8 @@ combinations = 0
 route_set = set()
 global route_count
 route_count = 0
+global walker_count
+walker_count = 0
 required_numbers = set()
 
 
@@ -25,6 +27,7 @@ def route_short_finder(data):
 
 def route_printer(data, idx):
     global combinations
+    global walker_count
     go_ahead = True
     # print(data)
     for i in range(idx, len(data) - 1):
@@ -36,21 +39,23 @@ def route_printer(data, idx):
         # print(f"Shorter:{shorter}")
         # print(f"Required numbers:{required_numbers}")
         # print(f"Try this: {shorter}")
-        if all(elem in shorter for elem in required_numbers):
-            # print("this may be ok", end=" ")
-            pass
-        else:
-            continue
-            # print("Not all required numbers are in", end=" ")
-            # go_ahead = False
-            # pass
+        # if all(elem in shorter for elem in required_numbers):
+        #     # print("this may be ok", end=" ")
+        #     pass
+        # else:
+        #     continue
+        # print("Not all required numbers are in", end=" ")
+        # go_ahead = False
+        # pass
         # continue
 
         # faster if only 2 entries
         if len(shorter) == 2:
-           return
+            return
 
         # if yes?
+        if go_ahead:
+            walker_count += 1
         if route_walker(shorter) and go_ahead:
             # try with even shorter path
             route_printer(shorter, i)
@@ -108,25 +113,27 @@ if __name__ == '__main__':
     print(f"Result: {diff_1 * diff_3}")
 
     print("PART TWO")
-    # print(data)
-    # import time
-    # start_time = time.time()
-    # route_printer(data, 1)
-    # print(combinations + 1)
-    # print(route_set)
-    # print(len(route_set) + 1)
-    # print("--- %s seconds ---" % (time.time() - start_time))
 
-    route_short_finder(data)
-    # required_numbers.add(0)
-    # required_numbers.add(data[len(data)-1])
-    route_count = 0 # affected by road walker
-    required_numbers = set(sorted(list(required_numbers)))
-    required_numbers = list(required_numbers)
-    required_numbers = sorted(required_numbers)
-    required_numbers = set(required_numbers)
-    # required_numbers = set(required_numbers)
-    print(required_numbers)
+    ways = [0] * len(data)
+    # ways in which a connection to a previous adapter can be made
+    ways[0] = ways[1] = 1
+    if data[2] - data[0] <= 3:
+        ways[2] = 2
+    else:
+        ways[2] = 1
 
-    route_printer(data, 1)
-    print(route_count + 1)
+    # starts 3 forward and looks up to 3 back
+    # increments ways with the number of possible connections at each checked previous adapter
+    for i in range(3, len(data)):
+        for j in range(1, 4):
+            # print("Looking at", data[i], "and", data[i - j], end="\t")
+            if data[i] - data[i - j] <= 3:
+                # print(f"Add {ways[i - j]} ways[{i} - {j}] at index {i}")
+                ways[i] += ways[i - j]
+            else:
+                # print()
+                pass
+
+    # print(ways)
+    # all possible combinations are at the last index
+    print("Combinations:", ways[-1])
