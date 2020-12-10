@@ -119,11 +119,12 @@ if __name__ == '__main__':
 
     route_short_finder(data)
     # required_numbers.add(0)
-    required_numbers.add(data[len(data)-1])
+    # required_numbers.add(data[len(data)-1])
     route_count = 0 # affected by road walker
     required_numbers = set(sorted(list(required_numbers)))
     required_numbers = list(required_numbers)
     required_numbers = sorted(required_numbers)
+    required_numbers = set(required_numbers)
     # required_numbers = set(required_numbers)
     print(required_numbers)
 
