@@ -1,139 +1,136 @@
-# Day 10
+# Day 11
 
-combinations = 0
-route_set = set()
-global route_count
-route_count = 0
-global walker_count
-walker_count = 0
-required_numbers = set()
+def get_seated(grid, max_row, max_col, changes, x, y):
+    # print(f"Now at coordinates [{x}][{y}]")
+    occupied_around = 0
 
+    for i in range(x - 1, x + 2):
+        for j in range(y - 1, y + 2):
+            # Check if out of grid
+            # print(f"Look at [{i}][{j}]", end='')
+            if i < 0 or i >= max_row or j < 0 or j >= max_col or (i == x and j == y):
+                # print(f"[{i}][{j}] is invalid")
+                # Invalid Position
+                pass
+            else:
+                # check current location status
+                if grid[i][j] == '.':
+                    pass
+                if grid[i][j] == '#':
+                    occupied_around += 1
+                if grid[i][j] == 'L':
+                    pass
 
-def route_short_finder(data):
-    for i in range(1, len(data) - 1):
-        target = data[i]
-        # print(f"Can i remove {target} and still reach the end?")
-        shorter = data[:]
-        shorter.remove(target)
-        # print(f"Try this: {shorter}")
+    # print(f"Occupied around:{occupied_around}")
+    if occupied_around == 0 and grid[x][y] == 'L':
+        # print(f"Change [{x}][{y}] to #")
+        changes.append(x)
+        changes.append(y)
 
-        if route_walker(shorter):
-            # print("No")
-            pass
-        else:
-            # print(f"No, {target} is a required number.")
-            required_numbers.add(target)
-
-
-def route_printer(data, idx):
-    global combinations
-    global walker_count
-    go_ahead = True
-    # print(data)
-    for i in range(idx, len(data) - 1):
-        target = data[i]
-        # print(f"Can i remove {target} and still reach the end?")
-
-        shorter = data[:]
-        shorter.remove(target)
-        # print(f"Shorter:{shorter}")
-        # print(f"Required numbers:{required_numbers}")
-        # print(f"Try this: {shorter}")
-        # if all(elem in shorter for elem in required_numbers):
-        #     # print("this may be ok", end=" ")
-        #     pass
-        # else:
-        #     continue
-        # print("Not all required numbers are in", end=" ")
-        # go_ahead = False
-        # pass
-        # continue
-
-        # faster if only 2 entries
-        if len(shorter) == 2:
-            return
-
-        # if yes?
-        if go_ahead:
-            walker_count += 1
-        if route_walker(shorter) and go_ahead:
-            # try with even shorter path
-            route_printer(shorter, i)
-        else:
-            pass
-    return
+    return changes
 
 
-def route_walker(way):
-    global route_count
-    # print("Way:",way)
-    # if len(way) == 2:
-    #     route_count += 1
-    #     return True
-    for j in range(0, len(way) - 1):
-        if way[j + 1] - way[j] == 1 or way[j + 1] - way[j] == 2 or way[j + 1] - way[j] == 3:
-            pass
-        else:
-            # print("No")
-            return False
-    # print("Yes")
-    route_count += 1
-    return True
+def stand_up(grid, max_row, max_col, changes, x, y):
+    # print(f"Now at coordinates [{x}][{y}]")
+    occupied_around = 0
+
+    for i in range(x - 1, x + 2):
+        for j in range(y - 1, y + 2):
+            # Check if out of grid
+            # print(f"Look at [{i}][{j}]", end='')
+            if i < 0 or i >= max_row or j < 0 or j >= max_col or (i == x and j == y):
+                # print(f"[{i}][{j}] is invalid")
+                # Invalid Position
+                pass
+            else:
+                # check current location status
+                if grid[i][j] == '.':
+                    pass
+                if grid[i][j] == '#':
+                    occupied_around += 1
+                if grid[i][j] == 'L':
+                    pass
+
+    # print(f"Occupied around:{occupied_around}")
+    if occupied_around >= 4 and grid[x][y] == '#':
+        # print(f"Change [{x}][{y}] to #")
+        changes.append(x)
+        changes.append(y)
+
+    return changes
 
 
 if __name__ == '__main__':
 
     print(f"Part One")
-    # Get input
-    # Append outlet voltage (0)
-    data = [0]
-    for line in open('puzzle_input.txt', 'r').readlines():
-        line = line.strip('\n')
-        data.append(int(line))
 
-    # Append device adapter (max + 3)
-    data.append(max(data) + 3)
+    # Sizes
+    rows = 0
+    cols = 0
 
-    # Sort Data
-    data = sorted(data)
+    # Get Input
+    layout = []
+    rows = 0
+    for line in open("sample_input1.txt", 'r').readlines():
+        line = list(line.strip('\n'))
+        layout.append(line)
+        rows += 1
+        cols = len(line)
 
-    diff_1 = 0
-    diff_3 = 0
+    # for row in layout:
+    #     print(row)
+    print(f"Grid [{rows} x {cols}]")
 
-    for i in range(0, len(data) - 1):
-        # print(f"Looking at {data[i]} and {data[i+1]}")
-        if data[i + 1] - data[i] == 1:
-            diff_1 += 1
-            # print(f"Difference of 1 between {data[i]} and {data[i+1]}")
-        elif data[i + 1] - data[i] == 3:
-            # print(f"Difference of 3 between {data[i]} and {data[i+1]}")
-            diff_3 += 1
+    changes = 1
+    cycles = 0
 
-    print(f"Diff 1: {diff_1}, Diff 3: {diff_3}")
-    print(f"Result: {diff_1 * diff_3}")
+    while changes != 0:
+        # Start Cycle --------------------------------------------------------------------
+        # Sit Down -----------------------------------------------------------------------
+        changelog = []
+        for i in range(0, rows):
+            for j in range(0, cols):
+                changelog = get_seated(layout, rows, cols, changelog, i, j)
 
-    print("PART TWO")
+        # Apply changes
+        for i in range(0, len(changelog), 2):
+            layout[changelog[i]][changelog[i + 1]] = '#'
 
-    ways = [0] * len(data)
-    # ways in which a connection to a previous adapter can be made
-    ways[0] = ways[1] = 1
-    if data[2] - data[0] <= 3:
-        ways[2] = 2
-    else:
-        ways[2] = 1
+        # for row in layout:
+        #     print(row)
+        print(f"Changes:{len(changelog) / 2}")
 
-    # starts 3 forward and looks up to 3 back
-    # increments ways with the number of possible connections at each checked previous adapter
-    for i in range(3, len(data)):
-        for j in range(1, 4):
-            # print("Looking at", data[i], "and", data[i - j], end="\t")
-            if data[i] - data[i - j] <= 3:
-                # print(f"Add {ways[i - j]} ways[{i} - {j}] at index {i}")
-                ways[i] += ways[i - j]
-            else:
-                # print()
-                pass
+        changes = len(changelog) / 2
+        cycles += 1
+        if changes == 0:
+            break
 
-    # print(ways)
-    # all possible combinations are at the last index
-    print("Combinations:", ways[-1])
+        # Stand Up -----------------------------------------------------------------------
+        changelog = []
+        for i in range(0, rows):
+            for j in range(0, cols):
+                changelog = stand_up(layout, rows, cols, changelog, i, j)
+
+        # Apply changes
+        for i in range(0, len(changelog), 2):
+            layout[changelog[i]][changelog[i + 1]] = 'L'
+
+        # for row in layout:
+        #     print(row)
+        print(f"Changes:{len(changelog) / 2}")
+
+        changes = len(changelog) / 2
+        cycles += 1
+        if changes == 0:
+            break
+        # End Cycle -----------------------------------------------------------------------
+
+    print("Cycles:", cycles - 1)
+
+    # Count Occupied
+    occupied = 0
+    for row in layout:
+        for place in row:
+            if place == '#':
+                occupied += 1
+    print("Occupied:", occupied)
