@@ -71,7 +71,7 @@ if __name__ == '__main__':
     # Get Input
     layout = []
     rows = 0
-    for line in open("sample_input1.txt", 'r').readlines():
+    for line in open("puzzle_input.txt", 'r').readlines():
         line = list(line.strip('\n'))
         layout.append(line)
         rows += 1
