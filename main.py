@@ -1,158 +1,69 @@
 # Day 12
 
-def move_forward(x, y, rotation, mov):
-    # N E S W
-    # 1 2 3 4
-    if rotation == 1:
-        y += mov
-    if rotation == 2:
-        x += mov
-    if rotation == 3:
-        y -= mov
-    if rotation == 4:
-        x -= mov
-
-    return x, y
-
-
-def move_ship_and_waypoint():
-    pass
-
-
 if __name__ == '__main__':
 
     print(f"Part One")
 
     # Initial Position
-    pos_x = 0
-    pos_y = 0
-    # N E S W
-    # 1 2 3 4
-    ori = 2
+    time = 0
+    bus_ids = []
     # Get Instructions
-    for line in open("puzzle_input.txt", 'r').readlines():
-        line = line.strip('\n')
-        # Read Instruction
-        code = line[0]
-        number = int(line[1:])
-        # print(f"Command: [{code}][{number}] Orientation:", ori)
-        if code == 'R' or code == 'L':
-            # Change rotation
-            if code == 'R':
-                degrees = number
-                # remove 90 degrees and change rotation + 1
-                # N E S W
-                # 1 2 3 4
-                while degrees:
-                    degrees -= 90
-                    ori += 1
-                    if ori > 4:
-                        ori -= 4
-                    if ori < 1:
-                        ori += 4
-            if code == 'L':
-                degrees = number
-                # remove 90 degrees and change rotation - 1
-                # N E S W
-                # 1 2 3 4
-                while degrees:
-                    degrees -= 90
-                    ori -= 1
-                    if ori > 4:
-                        ori -= 4
-                    if ori < 1:
-                        ori += 4
+    for line in open("sample_input2.txt", 'r').readlines():
+        if not time:
+            # get time
+            time = int(line.strip('\n'))
         else:
-            # Move in Specific Direction
-            if code == 'F':
-                # use previous rotation
-                # print("Forward with orientation", ori)
-                pos_x, pos_y = move_forward(pos_x, pos_y, ori, number)
-            # N E S W
-            # 1 2 3 4
-            if code == 'N':
-                pos_x, pos_y = move_forward(pos_x, pos_y, 1, number)
-            if code == 'E':
-                pos_x, pos_y = move_forward(pos_x, pos_y, 2, number)
-            if code == 'S':
-                pos_x, pos_y = move_forward(pos_x, pos_y, 3, number)
-            if code == 'W':
-                pos_x, pos_y = move_forward(pos_x, pos_y, 4, number)
-        # print(f"Ship now at: [{pos_x}][{pos_y}]")
+            # get bus ids
+            bus_list = line.split(',')
+            for i in range(0, len(bus_list)):
+                if bus_list[i] == 'x':
+                    pass
+                else:
+                    bus_ids.append(int(bus_list[i]))
 
-    print(f"Final: [{pos_x}][{pos_y}]")
-    print(f"Manhattan Distance:{abs(pos_x) + abs(pos_y)}")
+    print(time)
+    print(bus_ids)
 
-    print(f"Part Two")
-    # Initial Positions
-    ship_x = 0
-    ship_y = 0
-    way_x = 10
-    way_y = 1
+    later_time = time
 
-    # Get Instructions
-    for line in open("puzzle_input.txt", 'r').readlines():
-        line = line.strip('\n')
-        # Read Instruction
-        code = line[0]
-        number = int(line[1:])
-        print(f"Ship [{ship_x}][{ship_y}]\t", f"Waypoint[{way_x}][{way_y}]")
-        if code == 'R' or code == 'L':
-            # Rotate Waypoint Around Ship
-            if code == 'R':
-                degrees = number
-                # remove 90 degrees and change rotation + 1
-                while degrees:
-                    # Remember relative values
-                    rel_x = way_x - ship_x
-                    rel_y = way_y - ship_y
-                    # print("Rotate R")
-                    degrees -= 90
-                    new_x = rel_y
-                    new_y = rel_x * -1
-                    # apply
-                    way_x = ship_x + new_x
-                    way_y = ship_y + new_y
-            if code == 'L':
-                degrees = number
-                # remove 90 degrees and change rotation + 1
-                while degrees:
-                    # Remember relative values
-                    rel_x = way_x - ship_x
-                    rel_y = way_y - ship_y
-                    # print("Rotate L")
-                    degrees -= 90
-                    new_x = rel_y * -1
-                    new_y = rel_x
-                    # apply
-                    way_x = ship_x + new_x
-                    way_y = ship_y + new_y
+    next = []
+
+    for bus in bus_ids:
+        while later_time % bus != 0:
+            later_time += 1
         else:
-            # Move in Specific Direction
-            if code == 'F':
-                # Remember relative values
-                rel_x = way_x - ship_x
-                rel_y = way_y - ship_y
-                # Move ship to waypoint
-                ship_x += number * rel_x
-                ship_y += number * rel_y
-                # Move waypoint with ship
-                way_x = ship_x + rel_x
-                way_y = ship_y + rel_y
-            if code == 'N':
-                # Move waypoint
-                way_y += number
-            if code == 'E':
-                # Move waypoint
-                way_x += number
-            if code == 'S':
-                # Move waypoint
-                way_y -= number
-                pass
-            if code == 'W':
-                # Move waypoint
-                way_x -= number
-        # print(line)
+            # print(f"Bus {bus} will arrive at {later_time}")
+            arrival = {}
+            arrival['bus_id'] = bus
+            arrival['later_time'] = later_time
+            next.append(arrival)
+            later_time = time
 
-    print(f"Ship [{ship_x}][{ship_y}]\t", f"Waypoint[{way_x}][{way_y}]")
-    print(f"Manhattan Distance:{abs(ship_x) + abs(ship_y)}")
+    times = []
+    for i in next:
+        times.append(i['later_time'])
+
+    next_departure = min(times)
+    need_to_wait = next_departure - time
+
+    for entry in next:
+        if entry['later_time'] == next_departure:
+            need_id = entry['bus_id']
+
+    print(need_id * need_to_wait)
+
+    print("Part Two")
+    print(bus_ids)
+
+    # find step of first bus
+    time = 1
+    not_arrived = True
+
+    while not_arrived:
+        # print(f"Time: {time} Bus_ids[0]: {bus_ids[0]} Result: {time % bus_ids[0]}")
+        if time % bus_ids[0] == 0:
+            not_arrived = False
+        else:
+            time += 1
+
+    print(time)
