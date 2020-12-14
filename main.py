@@ -54,16 +54,3 @@ if __name__ == '__main__':
 
     print("Part Two")
     print(bus_ids)
-
-    # find step of first bus
-    time = 1
-    not_arrived = True
-
-    while not_arrived:
-        # print(f"Time: {time} Bus_ids[0]: {bus_ids[0]} Result: {time % bus_ids[0]}")
-        if time % bus_ids[0] == 0:
-            not_arrived = False
-        else:
-            time += 1
-
-    print(time)
