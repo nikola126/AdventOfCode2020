@@ -8,7 +8,7 @@ if __name__ == '__main__':
     time = 0
     bus_ids = []
     # Get Instructions
-    for line in open("sample_input2.txt", 'r').readlines():
+    for line in open("sample_input1.txt", 'r').readlines():
         if not time:
             # get time
             time = int(line.strip('\n'))
@@ -53,4 +53,36 @@ if __name__ == '__main__':
     print(need_id * need_to_wait)
 
     print("Part Two")
-    print(bus_ids)
+    # 7,13,x,x,59,x,31,19
+    # 0,1 ,x,x,4 ,x,5 ,6
+
+    # 7,13,x,x,59,x,31,19
+    for line in open("puzzle_input.txt", 'r').readlines():
+        line = line.strip('\n')
+        # print(line)
+
+    remainders = []
+    additions = []
+
+    line = line.split(',')
+    # print(line)
+
+    for item in line:
+        if item.isnumeric():
+            remainders.append(item)
+
+    diff = 0
+    for item in line:
+        if item.isnumeric():
+            additions.append(diff)
+            diff += 1
+        else:
+            diff += 1
+
+    print("Remainders:", remainders)
+    print("Additions:", additions)
+
+    # System of Equations
+    # WOLFRAM ALPHA
+    # { Mod{t + addition[0], remainder[0]} == 0 , ... }
+    # for all additions and remainders
