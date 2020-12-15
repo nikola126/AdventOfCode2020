@@ -39,6 +39,34 @@ def apply_mask(mask, bin):
     return bin
 
 
+def apply_mask_2(mask, bin):
+    for i in range(0, len(mask)):
+        if mask[i] == 'X':
+            bin[i] = 'X'
+        elif mask[i] == '0':
+            pass
+        else:
+            bin[i] = 1
+    return bin
+
+
+def get_addresses(masked_s):
+    # base case
+    if 'X' not in masked_s:
+        # print("Combination:", masked)
+        return masked_s
+
+    addresses = ''
+    x_idx = int(masked_s.index('X'))
+    with0 = masked_s[:x_idx] + '0' + masked_s[x_idx+1:]
+    with1 = masked_s[:x_idx] + '1' + masked_s[x_idx + 1:]
+
+    addresses += get_addresses(with0) + ','
+    addresses += get_addresses(with1)
+
+    return addresses
+
+
 if __name__ == '__main__':
 
     print(f"Part One")
@@ -86,5 +114,29 @@ if __name__ == '__main__':
     print(total)
 
     print("Part Two")
-
-
+    # Get Instructions
+    for line in open("sample_input1.txt", 'r').readlines():
+        # Get Mask
+        line = line.strip('\n')
+        if 'mask' in line:
+            mask = line[7:]
+            # print("Updated mask:", mask)
+        else:
+            line = line.split('] = ')
+            # get location
+            loc = int(line[0][4:])
+            # get value
+            value = int(line[1])
+            # loc to binary!!!
+            binary = dec2bin(loc, mask)
+            print("Binary:", binary)
+            # apply mask
+            print("Mask:", mask)
+            masked = apply_mask_2(mask, binary)
+            print("After mask:", masked)
+            # convert to string
+            masked_string = ""
+            masked_string = masked_string.join([str(elem) for elem in masked])
+            # get all possible addresses
+            addresses_to_visit = get_addresses(masked_string)
+            print("Address combinations:", addresses_to_visit)
