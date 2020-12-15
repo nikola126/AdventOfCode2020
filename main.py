@@ -53,12 +53,11 @@ def apply_mask_2(mask, bin):
 def get_addresses(masked_s):
     # base case
     if 'X' not in masked_s:
-        # print("Combination:", masked)
         return masked_s
 
     addresses = ''
     x_idx = int(masked_s.index('X'))
-    with0 = masked_s[:x_idx] + '0' + masked_s[x_idx+1:]
+    with0 = masked_s[:x_idx] + '0' + masked_s[x_idx + 1:]
     with1 = masked_s[:x_idx] + '1' + masked_s[x_idx + 1:]
 
     addresses += get_addresses(with0) + ','
@@ -74,13 +73,13 @@ if __name__ == '__main__':
     mask = ''
     cell = {'location': 0, 'value': 0}
     memory = []
+    lines_passed = 0
     # Get Instructions
     for line in open("puzzle_input.txt", 'r').readlines():
         # Get Mask
         line = line.strip('\n')
         if 'mask' in line:
             mask = line[7:]
-            # print("Updated mask:", mask)
         else:
             line = line.split('] = ')
             # get location
@@ -89,13 +88,10 @@ if __name__ == '__main__':
             value = int(line[1])
             # value to binary
             binary = dec2bin(value, mask)
-            # print("Binary:", binary)
             # apply mask
             masked = apply_mask(mask, binary)
-            # print("After Mask:", binary)
             # value to decimal
             decimal = bin2dec(masked)
-            # print("Save", decimal, "to", loc)
             # save value in cell in memory
             saved = False
             for cel in memory:
@@ -114,13 +110,16 @@ if __name__ == '__main__':
     print(total)
 
     print("Part Two")
+
+    memory = []
     # Get Instructions
-    for line in open("sample_input1.txt", 'r').readlines():
+    for line in open("puzzle_input.txt", 'r').readlines():
+        lines_passed += 1
+        print("Now at line", lines_passed)
         # Get Mask
         line = line.strip('\n')
         if 'mask' in line:
             mask = line[7:]
-            # print("Updated mask:", mask)
         else:
             line = line.split('] = ')
             # get location
@@ -129,14 +128,34 @@ if __name__ == '__main__':
             value = int(line[1])
             # loc to binary!!!
             binary = dec2bin(loc, mask)
-            print("Binary:", binary)
             # apply mask
-            print("Mask:", mask)
             masked = apply_mask_2(mask, binary)
-            print("After mask:", masked)
             # convert to string
             masked_string = ""
             masked_string = masked_string.join([str(elem) for elem in masked])
-            # get all possible addresses
+            # get all possible addresses (as a string with commas)
             addresses_to_visit = get_addresses(masked_string)
-            print("Address combinations:", addresses_to_visit)
+            # split at commas
+            addresses_to_visit = addresses_to_visit.split(',')
+            # convert addresses to decimal
+            loc_list = []
+            for add in addresses_to_visit:
+                loc_list.append(bin2dec(add))
+            # go at every address and save value there
+            for loc in loc_list:
+                # save value in cell in memory
+                saved = False
+                for cel in memory:
+                    if cel['location'] == loc:
+                        cel['value'] = value
+                        saved = True
+                        break
+                if not saved:
+                    cell = {'location': loc, 'value': value}
+                    memory.append(cell)
+
+    total = 0
+    for cel in memory:
+        total += cel['value']
+
+    print(total)
