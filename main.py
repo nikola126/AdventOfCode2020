@@ -1,88 +1,79 @@
-# Day 13
+# Day 16
 
 if __name__ == '__main__':
 
     print(f"Part One")
 
-    # Initial Position
-    time = 0
-    bus_ids = []
+    your_ticket_reached = False
+    nearby_tickets_reached = False
+    fields = {}
+    ticket_error_rate = 0
+    my_ticket = []
     # Get Instructions
-    for line in open("sample_input1.txt", 'r').readlines():
-        if not time:
-            # get time
-            time = int(line.strip('\n'))
-        else:
-            # get bus ids
-            bus_list = line.split(',')
-            for i in range(0, len(bus_list)):
-                if bus_list[i] == 'x':
-                    pass
-                else:
-                    bus_ids.append(int(bus_list[i]))
-
-    print(time)
-    print(bus_ids)
-
-    later_time = time
-
-    next = []
-
-    for bus in bus_ids:
-        while later_time % bus != 0:
-            later_time += 1
-        else:
-            # print(f"Bus {bus} will arrive at {later_time}")
-            arrival = {}
-            arrival['bus_id'] = bus
-            arrival['later_time'] = later_time
-            next.append(arrival)
-            later_time = time
-
-    times = []
-    for i in next:
-        times.append(i['later_time'])
-
-    next_departure = min(times)
-    need_to_wait = next_departure - time
-
-    for entry in next:
-        if entry['later_time'] == next_departure:
-            need_id = entry['bus_id']
-
-    print(need_id * need_to_wait)
-
-    print("Part Two")
-    # 7,13,x,x,59,x,31,19
-    # 0,1 ,x,x,4 ,x,5 ,6
-
-    # 7,13,x,x,59,x,31,19
     for line in open("puzzle_input.txt", 'r').readlines():
         line = line.strip('\n')
-        # print(line)
-
-    remainders = []
-    additions = []
-
-    line = line.split(',')
-    # print(line)
-
-    for item in line:
-        if item.isnumeric():
-            remainders.append(item)
-
-    diff = 0
-    for item in line:
-        if item.isnumeric():
-            additions.append(diff)
-            diff += 1
+        if len(line) == 0:
+            # empty line
+            pass
         else:
-            diff += 1
+            if '-' in line:
+                # field_name and ranges
+                line = line.split(':')
+                field_name = line[0]
+                # ranges
+                ranges_field = line[1]
+                ranges_field = ranges_field.split(' ')
+                first_range = ranges_field[1]
+                second_range = ranges_field[3]
+                first_range = first_range.split('-')
+                second_range = second_range.split('-')
+                ranges = []
+                for i in range(int(first_range[0]), int(first_range[1]) + 1):
+                    ranges.append(i)
+                for i in range(int(second_range[0]), int(second_range[1]) + 1):
+                    ranges.append(i)
+                # add valid values to dictionary
+                fields[field_name] = ranges
+            if 'your' in line:
+                your_ticket_reached = True
+                continue
+            if your_ticket_reached:
+                line = line.split(',')
+                your_ticket = line
+                your_ticket_reached = False
+                # save information about my ticket
+                for item in your_ticket:
+                    my_ticket.append(int(item))
+            if 'nearby' in line:
+                nearby_tickets_reached = True
+                continue
+            if nearby_tickets_reached:
+                line = line.split(',')
+                # convert to ints
+                for i in range(0, len(line)):
+                    line[i] = int(line[i])
+                # check if its in any range
+                incorrect = []
+                for item in line:
+                    for field in fields:
+                        if item in fields[field]:
+                            # remove from list
+                            if item in incorrect:
+                                incorrect.remove(item)
+                            break
+                        else:
+                            # add to list of incorrect values
+                            if item not in incorrect:
+                                incorrect.append(item)
+                            pass
+                # add to the error rate
+                ticket_error_rate += sum(incorrect)
+    print("Fields and Ranges:")
+    for field in fields:
+        print(field)
+    print("My ticket:", my_ticket)
+    print("Ticket Error Rate:", ticket_error_rate)
 
-    print("Remainders:", remainders)
-    print("Additions:", additions)
+    print("Part Two")
 
-    # System of Equations
-    # WOLFRAM ALPHA
-    # { Mod{t + addition[0], remainder[0]} == 0 , ... }
-    # for all additions and remainders
+
