@@ -112,7 +112,7 @@ if __name__ == '__main__':
     valid_tickets = 0
     invalid_tickets = 0
     # Get Instructions
-    for line in open("sample_input2.txt", 'r').readlines():
+    for line in open("puzzle_input.txt", 'r').readlines():
         line = line.strip('\n')
         if len(line) == 0:
             # empty line
@@ -156,12 +156,16 @@ if __name__ == '__main__':
                 nearby_tickets_reached = True
                 continue
             if nearby_tickets_reached:
+                no_zero_in_ticket = True
                 line = line.split(',')
                 # convert to ints
                 for i in range(0, len(line)):
+                    if line[i] == '0':
+                        print("FOUND A ZERO")
+                        no_zero_in_ticket = False
                     line[i] = int(line[i])
                 # check if valid
-                if check_validity_part_two(line, fields):
+                if check_validity_part_two(line, fields) and no_zero_in_ticket:
                     valid_tickets += 1
                     # print("This ticket is valid")
                     for i in range(0, fields_count):
@@ -172,25 +176,58 @@ if __name__ == '__main__':
                     invalid_tickets += 1
                     pass
 
-    print("Values Check:", column_check)
-    print("Fields:", fields)
+    # for i in range(fields_count):
+    #     print("Length of field", i, ":", len(column_check[i]))
+    # print(column_check[i])
+    # print("Fields:", fields)
     print("Valid Tickets:", valid_tickets)
     print("Invalid Tickets:", invalid_tickets)
     # print(column_check)
-    fits = 0
-    for i in range(0, fields_count):
-        print("Check in how many categories,", column_check[i], "can fit.")
-        for field in fields:
-            # print(fields[field])
+    # while fields != {}:
+    field_to_remove = ''
+    indexes_of_identified_columns = []
+    while fields != {}:
+        possible_meanings = []
+        for i in range(0, fields_count):
+            if i in indexes_of_identified_columns:
+                continue
             fits = 0
-            for value in column_check[i]:
-                if value not in fields[field]:
-                    # print(column_check[i], "does not fit in", field)
-                    break
-                    pass
+            # print("Check in how many categories,", column_check[i][0:5], "can fit.")
+            for field in fields:
+                # print("Checking if it means", field, ".", valid_tickets, "required.")
+                required = 0
+                for value in column_check[i]:
+                    # print("Checking", value)
+                    if value in fields[field]:
+                        # print(" ", value, "is in the range of", field)
+                        required += 1
+                    else:
+                        # print(value, "is not in the range of", field)
+                        break
+                # print("Got", required)
+                if required == valid_tickets:
+                    # print(required, "out of", valid_tickets, "Possible field meaning:", field)
+                    possible_meanings.append(field)
                 else:
-                    fits += 1
-        if fits == 1:
-            print(column_check[i], "fits in exactly one field")
-            fields.pop(field)
-            break
+                    # print(required, "out of", valid_tickets)
+                    pass
+            # print("Possible meanings of column", i, possible_meanings)
+            if len(possible_meanings) == 1:
+                print("Field", i, "Identified as", possible_meanings[0], ". Remove it from dictionary")
+                fields.pop(possible_meanings[0])
+                # print("index of identified column:", i)
+                indexes_of_identified_columns.append(i)
+                break
+            elif len(possible_meanings) == 0:
+                # print("NOTHING FITS HERE", len(column_check[i]))
+                print(column_check[i])
+                print(max(column_check[i]), min(column_check[i]))
+                quit()
+            else:
+                # print("Inconclusive")
+                # print(possible_meanings)
+                possible_meanings = []
+
+    print("Fields left:")
+    for field in fields:
+        print(field)
