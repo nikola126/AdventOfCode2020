@@ -112,7 +112,7 @@ if __name__ == '__main__':
     valid_tickets = 0
     invalid_tickets = 0
     # Get Instructions
-    for line in open("puzzle_input.txt", 'r').readlines():
+    for line in open("sample_input2.txt", 'r').readlines():
         line = line.strip('\n')
         if len(line) == 0:
             # empty line
@@ -172,35 +172,25 @@ if __name__ == '__main__':
                     invalid_tickets += 1
                     pass
 
-    # print("Values Check:", column_check)
-    # print("Fields:", fields)
+    print("Values Check:", column_check)
+    print("Fields:", fields)
     print("Valid Tickets:", valid_tickets)
     print("Invalid Tickets:", invalid_tickets)
-    for i in range(fields_count):
-        # print("Now checking position", i)
-        required_inside = len(column_check[i])
-        inside = 0
-        # print("Required inside a single range:", required_inside)
+    # print(column_check)
+    fits = 0
+    for i in range(0, fields_count):
+        print("Check in how many categories,", column_check[i], "can fit.")
         for field in fields:
+            # print(fields[field])
+            fits = 0
             for value in column_check[i]:
-                # print("Check if", value, "is in", field)
-                if value in fields[field]:
-                    inside += 1
-                    # print("It is!")
-            # print("values in range of position", field, ":", inside)
-            if inside == required_inside:
-                print("Position", i, "corresponds to", field,"your ticket:",my_ticket[i])
-                fields.pop(field)
-                inside = 0
-                break
-            else:
-                # print("Inconclusive, resetting")
-                inside = 0
-                # break
-
-    # 2 4 5 7 8 9
-    # 59 * 151 * 107 * 73 * 109 * 157
-    # print("Fields Left:")
-    # for field in fields:
-    #     print(field)
-    # print("My ticket:", my_ticket)
+                if value not in fields[field]:
+                    # print(column_check[i], "does not fit in", field)
+                    break
+                    pass
+                else:
+                    fits += 1
+        if fits == 1:
+            print(column_check[i], "fits in exactly one field")
+            fields.pop(field)
+            break
